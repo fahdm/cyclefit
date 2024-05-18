@@ -1,5 +1,10 @@
+import RouteForm from '../../components/RouteForm/RouteForm';
+
 export default function NewOrderPage() {
   return (
-    <h1>NewOrderPage</h1>
+    <div>
+      <h1>Create New Route</h1>
+      <RouteForm />
+    </div>
   );
 }
