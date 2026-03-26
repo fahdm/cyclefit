@@ -24,16 +24,28 @@ const Map = ({ startLocation, endLocation, waypoints }) => {
       })
 
     useEffect(() => {
-        if (startLocation && endLocation) {
-            const waypointsArray = waypoints.map(location => ({
-                location,
-                stopover: true
-            }));
-            
-          
-            
-        }
-    }, [startLocation, endLocation, waypoints]);
+        if (!isLoaded || !startLocation || !endLocation) return;
+
+        const waypointsArray = waypoints.map(location => ({
+            location,
+            stopover: true
+        }));
+
+        const directionsService = new window.google.maps.DirectionsService();
+        directionsService.route(
+            {
+                origin: startLocation,
+                destination: endLocation,
+                waypoints: waypointsArray,
+                travelMode: window.google.maps.TravelMode.BICYCLING,
+            },
+            (result, status) => {
+                if (status === window.google.maps.DirectionsStatus.OK) {
+                    setDirections(result);
+                }
+            }
+        );
+    }, [isLoaded, startLocation, endLocation, waypoints]);
 
     
 
@@ -52,43 +64,3 @@ const Map = ({ startLocation, endLocation, waypoints }) => {
 };
 
 export default Map;
-
-// import { useEffect, useRef } from 'react';
-
-// export default function Map({ startLocation, endLocation, waypoints }) {
-//   const mapRef = useRef(null);
-
-//   useEffect(() => {
-//     const map = new window.google.maps.Map(mapRef.current, {
-//       center: { lat: 37.7749, lng: -122.4194 }, // Default to San Francisco
-//       zoom: 10,
-//     });
-
-//     const directionsService = new window.google.maps.DirectionsService();
-//     const directionsRenderer = new window.google.maps.DirectionsRenderer();
-//     directionsRenderer.setMap(map);
-
-//     const waypointsArray = waypoints.map(location => ({
-//       location,
-//       stopover: true
-//     }));
-
-//     directionsService.route(
-//       {
-//         origin: startLocation,
-//         destination: endLocation,
-//         waypoints: waypointsArray,
-//         travelMode: window.google.maps.TravelMode.BICYCLING,
-//       },
-//       (result, status) => {
-//         if (status === window.google.maps.DirectionsStatus.OK) {
-//           directionsRenderer.setDirections(result);
-//         } else {
-//           console.error(`error fetching directions ${result}`);
-//         }
-//       }
-//     );
-//   }, [startLocation, endLocation, waypoints]);
-
-//   return <div ref={mapRef} style={{ width: '100%', height: '400px' }}></div>;
-// }
